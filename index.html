@@ -194,7 +194,7 @@
         }
         createSnow();
 
-        // --- Logic Form & Cooldown ---
+        // --- Logic Form & Anti-Spam ---
         const form = document.getElementById('giftForm');
         const linkInput = document.getElementById('link');
         const qtyInput = document.getElementById('quantity');
@@ -204,51 +204,24 @@
         const successModal = document.getElementById('successModal');
         const modalContent = document.getElementById('modalContent');
 
-        let cooldownTimer = null;
-
-        // Check Cooldown khi load trang
-        function checkCooldown() {
-            const lastTime = localStorage.getItem('last_gift_time');
-            if (lastTime) {
-                const diff = Date.now() - parseInt(lastTime);
-                const remaining = 60000 - diff; // 60s
-                
-                if (remaining > 0) {
-                    startCooldown(Math.ceil(remaining / 1000));
-                }
+        // Hàm kiểm tra trạng thái người dùng
+        function checkStatus() {
+            // Kiểm tra trong LocalStorage xem đã nhận quà chưa
+            const hasReceived = localStorage.getItem('hv_gift_received');
+            
+            if (hasReceived === 'true') {
+                disableFormPermanently();
             }
         }
 
-        function startCooldown(seconds) {
-            let timeLeft = seconds;
-            disableForm(true, `CHỜ ${timeLeft}s`);
-
-            if (cooldownTimer) clearInterval(cooldownTimer);
-            
-            cooldownTimer = setInterval(() => {
-                timeLeft--;
-                if (timeLeft <= 0) {
-                    clearInterval(cooldownTimer);
-                    disableForm(false, 'BUFF NGAY');
-                } else {
-                    btnText.innerText = `CHỜ ${timeLeft}s`;
-                }
-            }, 1000);
-        }
-
-        function disableForm(disabled, text) {
-            submitBtn.disabled = disabled;
-            linkInput.disabled = disabled;
-            qtyInput.disabled = disabled;
-            btnText.innerText = text;
-            
-            if (disabled) {
-                submitBtn.classList.add('cursor-not-allowed');
-                document.querySelector('.icon-zap').style.display = 'none'; // Ẩn icon sét
-            } else {
-                submitBtn.classList.remove('cursor-not-allowed');
-                document.querySelector('.icon-zap').style.display = 'inline-block';
-            }
+        function disableFormPermanently() {
+            submitBtn.disabled = true;
+            linkInput.disabled = true;
+            qtyInput.disabled = true;
+            btnText.innerText = 'ĐÃ NHẬN QUÀ 🎁';
+            submitBtn.classList.add('bg-white/10', 'text-white/40', 'cursor-not-allowed');
+            submitBtn.classList.remove('bg-white', 'text-black', 'hover:bg-gray-200');
+            document.querySelector('.icon-zap').style.display = 'none';
         }
 
         function showError(msg) {
@@ -272,6 +245,8 @@
             modalContent.classList.add('scale-90');
             setTimeout(() => {
                 successModal.classList.add('hidden');
+                // Sau khi đóng modal thì khóa form luôn vì đã thành công
+                disableFormPermanently();
             }, 300);
         }
 
@@ -279,7 +254,14 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Validate
+            // 1. Kiểm tra lại lần nữa trước khi gửi (Client-side Security)
+            if (localStorage.getItem('hv_gift_received') === 'true') {
+                showError('Bạn đã nhận quà rồi mà! 😜');
+                disableFormPermanently();
+                return;
+            }
+
+            // Validate Input
             const link = linkInput.value.trim();
             const qty = parseInt(qtyInput.value);
 
@@ -291,12 +273,17 @@
                 showError('Nhập số lượng đi nào!');
                 return;
             }
+            if (qty > 100) {
+                showError('Tham thế! Tối đa 100 thôi 😤');
+                return;
+            }
 
             // UI Loading
             submitBtn.disabled = true;
             btnText.innerHTML = 'Đang gửi...';
 
             try {
+                // Giới hạn max 100 (đảm bảo logic)
                 const finalQty = Math.min(qty, 100);
                 
                 const message = `
@@ -327,31 +314,31 @@
 
                 if (!response.ok) {
                     console.error('Telegram Error:', data);
-                    // Lấy thông báo lỗi chi tiết từ Telegram
                     const telegramError = data.description || 'Lỗi không xác định';
                     throw new Error(`Telegram từ chối: ${telegramError}`);
                 }
 
-                // Thành công
+                // --- THÀNH CÔNG ---
+                // 1. Lưu dấu đã nhận quà vào trình duyệt
+                localStorage.setItem('hv_gift_received', 'true');
+                
+                // 2. Mở Modal báo thành công
                 openModal();
+                
+                // 3. Xóa input
                 linkInput.value = '';
                 qtyInput.value = '';
 
-                // Set Cooldown
-                localStorage.setItem('last_gift_time', Date.now().toString());
-                startCooldown(60);
-
             } catch (err) {
                 console.error('Fetch Error:', err);
-                // Hiển thị lỗi cụ thể cho người dùng
                 showError(err.message || 'Lỗi kết nối. Kiểm tra mạng hoặc bật Bot!');
                 submitBtn.disabled = false;
                 btnText.innerText = 'BUFF NGAY';
             }
         });
 
-        // Chạy init
-        checkCooldown();
+        // Chạy kiểm tra khi vào trang
+        checkStatus();
 
     </script>
 </body>
