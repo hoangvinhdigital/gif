@@ -149,6 +149,41 @@
         </div>
     </div>
 
+    <!-- INTRO MODAL (NEW) -->
+    <div id="introModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl transition-opacity duration-500 opacity-0 hidden">
+        <div class="bg-[#111] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl transform scale-90 transition-transform duration-300 relative overflow-hidden" id="introContent">
+            <!-- Glow Effect -->
+            <div class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-gradient-to-br from-red-600/10 to-transparent pointer-events-none"></div>
+            
+            <div class="relative z-10">
+                <div class="w-20 h-20 bg-gradient-to-br from-red-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-red-500/30 animate-bounce">
+                    <i data-lucide="gift" class="w-10 h-10 text-white fill-white/20"></i>
+                </div>
+                
+                <h2 class="text-2xl font-display font-black text-white mb-3">QUÀ GIÁNG SINH 🎅</h2>
+                
+                <div class="bg-white/5 rounded-xl p-4 mb-6 text-left border border-white/5">
+                    <p class="text-white/80 text-sm mb-2 flex items-start gap-2">
+                        <span class="text-green-500">✅</span> 
+                        <span>Đây là sự kiện tặng <b>Tim TikTok</b> miễn phí của <b>Hoàng Vinh</b>.</span>
+                    </p>
+                    <p class="text-white/80 text-sm mb-2 flex items-start gap-2">
+                        <span class="text-green-500">✅</span> 
+                        <span>Bạn chỉ cần nhập Link Video để nhận ngay <b>100 TIM</b>.</span>
+                    </p>
+                    <p class="text-white/60 text-xs italic mt-3 pt-2 border-t border-white/10">
+                        ⚠️ Lưu ý: Mỗi người chỉ được nhận 1 lần duy nhất thôi nhé!
+                    </p>
+                </div>
+
+                <button onclick="closeIntro()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-red-900/40 flex items-center justify-center gap-2 group">
+                    <span>OK, Nhận Quà Luôn</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Success Modal -->
     <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
         <div class="bg-[#111] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl transform scale-90 transition-transform duration-300" id="modalContent">
@@ -204,13 +239,39 @@
         const successModal = document.getElementById('successModal');
         const modalContent = document.getElementById('modalContent');
 
+        // Logic Intro Modal
+        const introModal = document.getElementById('introModal');
+        const introContent = document.getElementById('introContent');
+
+        function showIntro() {
+            // Chỉ hiện nếu chưa nhận quà
+            if (localStorage.getItem('hv_gift_received') !== 'true') {
+                introModal.classList.remove('hidden');
+                setTimeout(() => {
+                    introModal.classList.remove('opacity-0');
+                    introContent.classList.remove('scale-90');
+                    introContent.classList.add('scale-100');
+                }, 300); // Delay xíu cho mượt
+            }
+        }
+
+        window.closeIntro = function() {
+            introModal.classList.add('opacity-0');
+            introContent.classList.remove('scale-100');
+            introContent.classList.add('scale-90');
+            setTimeout(() => {
+                introModal.classList.add('hidden');
+            }, 300);
+        }
+
         // Hàm kiểm tra trạng thái người dùng
         function checkStatus() {
-            // Kiểm tra trong LocalStorage xem đã nhận quà chưa
             const hasReceived = localStorage.getItem('hv_gift_received');
-            
             if (hasReceived === 'true') {
                 disableFormPermanently();
+            } else {
+                // Nếu chưa nhận quà thì hiện bảng hướng dẫn
+                showIntro();
             }
         }
 
@@ -245,7 +306,6 @@
             modalContent.classList.add('scale-90');
             setTimeout(() => {
                 successModal.classList.add('hidden');
-                // Sau khi đóng modal thì khóa form luôn vì đã thành công
                 disableFormPermanently();
             }, 300);
         }
