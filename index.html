@@ -102,7 +102,7 @@
                 </p>
             </div>
 
-            <!-- COUNTDOWN TIMER (NEW) -->
+            <!-- COUNTDOWN TIMER -->
             <div class="mb-8 bg-black/40 rounded-xl p-4 border border-red-500/30 relative overflow-hidden">
                 <div class="absolute inset-0 bg-red-600/5 animate-pulse"></div>
                 <p class="text-red-400 text-xs font-bold uppercase tracking-widest text-center mb-2 relative z-10">
@@ -253,26 +253,25 @@
         }
         createSnow();
 
-        // --- LOGIC ĐỒNG HỒ ĐẾM NGƯỢC (Đến hết ngày mai) ---
+        // --- LOGIC ĐỒNG HỒ ĐẾM NGƯỢC ---
         function startCountdown() {
-            const now = new Date();
-            // Tính thời gian kết thúc: 23:59:59 ngày mai (tương đối theo thời điểm truy cập)
-            const tomorrow = new Date(now);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(23, 59, 59, 999);
+            // 👇👇👇 CHỈNH SỬA NGÀY HẾT SỰ KIỆN TẠI ĐÂY 👇👇👇
+            // Định dạng: "Năm-Tháng-NgàyTHGiờ:Phút:Giây"
+            // Ví dụ muốn hết hạn vào 23:59:59 ngày 25/12/2024 thì điền: "2024-12-25T23:59:59"
+            const endString = "2025-12-27T23:59:59"; 
             
-            const endTime = tomorrow.getTime();
+            const endTime = new Date(endString).getTime();
 
             function updateTimer() {
                 const currentTime = new Date().getTime();
                 const diff = endTime - currentTime;
 
                 if (diff <= 0) {
-                    // Hết giờ
+                    // Hết giờ -> Khóa Form với thông báo "SỰ KIỆN ĐÃ KẾT THÚC"
                     document.getElementById('timer-hours').innerText = '00';
                     document.getElementById('timer-minutes').innerText = '00';
                     document.getElementById('timer-seconds').innerText = '00';
-                    disableFormPermanently(); // Khóa form nếu hết giờ (tùy chọn)
+                    disableFormPermanently('SỰ KIỆN ĐÃ KẾT THÚC 🛑'); 
                     return;
                 }
 
@@ -327,17 +326,18 @@
         function checkStatus() {
             const hasReceived = localStorage.getItem('hv_gift_received');
             if (hasReceived === 'true') {
-                disableFormPermanently();
+                disableFormPermanently('ĐÃ NHẬN QUÀ 🎁');
             } else {
                 showIntro();
             }
         }
 
-        function disableFormPermanently() {
+        // Cập nhật hàm này để nhận nội dung thông báo (label)
+        function disableFormPermanently(label = 'ĐÃ NHẬN QUÀ 🎁') {
             submitBtn.disabled = true;
             linkInput.disabled = true;
             qtyInput.disabled = true;
-            btnText.innerText = 'ĐÃ NHẬN QUÀ 🎁';
+            btnText.innerText = label;
             submitBtn.classList.add('bg-white/10', 'text-white/40', 'cursor-not-allowed');
             submitBtn.classList.remove('bg-white', 'text-black', 'hover:bg-gray-200');
             document.querySelector('.icon-zap').style.display = 'none';
@@ -364,7 +364,7 @@
             modalContent.classList.add('scale-90');
             setTimeout(() => {
                 successModal.classList.add('hidden');
-                disableFormPermanently();
+                disableFormPermanently('ĐÃ NHẬN QUÀ 🎁');
             }, 300);
         }
 
@@ -374,7 +374,7 @@
             
             if (localStorage.getItem('hv_gift_received') === 'true') {
                 showError('Bạn đã nhận quà rồi mà! 😜');
-                disableFormPermanently();
+                disableFormPermanently('ĐÃ NHẬN QUÀ 🎁');
                 return;
             }
 
