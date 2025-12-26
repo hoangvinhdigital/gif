@@ -255,40 +255,48 @@
 
         // --- LOGIC ĐỒNG HỒ ĐẾM NGƯỢC ---
         function startCountdown() {
-            // 👇👇👇 CHỈNH SỬA NGÀY HẾT SỰ KIỆN TẠI ĐÂY 👇👇👇
+            // 👇👇👇 QUAN TRỌNG: CHỈNH NGÀY KẾT THÚC CỐ ĐỊNH TẠI ĐÂY 👇👇👇
+            // Đây là mốc thời gian chung cho TẤT CẢ mọi người.
             // Định dạng: "Năm-Tháng-NgàyTHGiờ:Phút:Giây"
-            // Ví dụ muốn hết hạn vào 23:59:59 ngày 25/12/2024 thì điền: "2024-12-25T23:59:59"
-            const endString = "2025-12-27T23:59:59"; 
+            // Ví dụ: Muốn kết thúc vào 23 giờ 59 phút ngày 31/12/2024 (Tết Dương Lịch)
             
-            const endTime = new Date(endString).getTime();
+            const FIXED_END_TIME = "2025-12-27T23:59:59"; 
+            
+            // Code sẽ tự tính toán khoảng cách từ "Bây giờ" đến mốc trên
+            const endTime = new Date(FIXED_END_TIME).getTime();
 
             function updateTimer() {
                 const currentTime = new Date().getTime();
                 const diff = endTime - currentTime;
 
                 if (diff <= 0) {
-                    // Hết giờ -> Khóa Form với thông báo "SỰ KIỆN ĐÃ KẾT THÚC"
+                    // Nếu đã qua mốc thời gian trên -> Khóa Form vĩnh viễn với TẤT CẢ mọi người
                     document.getElementById('timer-hours').innerText = '00';
                     document.getElementById('timer-minutes').innerText = '00';
                     document.getElementById('timer-seconds').innerText = '00';
+                    
+                    // Hiện thông báo hết hạn
                     disableFormPermanently('SỰ KIỆN ĐÃ KẾT THÚC 🛑'); 
+                    
+                    // (Tuỳ chọn) Ẩn luôn đồng hồ đếm ngược nếu muốn
+                    // document.querySelector('.mb-8.bg-black\\/40').style.display = 'none';
                     return;
                 }
 
-                // Tính toán
+                // Tính toán giờ/phút/giây còn lại
                 const hours = Math.floor(diff / (1000 * 60 * 60));
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-                // Hiển thị (Thêm số 0 nếu < 10)
+                // Hiển thị số (Thêm số 0 đằng trước nếu nhỏ hơn 10)
                 document.getElementById('timer-hours').innerText = hours < 10 ? '0' + hours : hours;
                 document.getElementById('timer-minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
                 document.getElementById('timer-seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
             }
 
-            // Chạy mỗi giây
+            // Cập nhật mỗi giây
             setInterval(updateTimer, 1000);
-            updateTimer(); // Chạy ngay lập tức
+            updateTimer(); // Chạy ngay lập tức để tránh delay 1s đầu
         }
 
         // --- Logic Form & Anti-Spam ---
