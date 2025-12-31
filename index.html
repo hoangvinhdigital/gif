@@ -3,20 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoàng Vinh - Christmas Drop 🎅</title>
+    <title>Hoàng Vinh - Happy New Year 2026</title>
     
-    <!-- 1. Tailwind CSS (CDN) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. Google Fonts: Outfit & Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- 3. Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- Custom Config -->
     <script>
         tailwind.config = {
             theme: {
@@ -25,9 +19,8 @@
                         sans: ['Inter', 'sans-serif'],
                         display: ['Outfit', 'sans-serif'],
                     },
-                    animation: {
-                        'spin-slow': 'spin 3s linear infinite',
-                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    colors: {
+                        gold: '#FFD700',
                     }
                 }
             }
@@ -35,426 +28,297 @@
     </script>
 
     <style>
-        /* CSS cho Tuyết rơi */
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0;
-            pointer-events: none;
-            animation: fall linear infinite;
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translateY(-10vh) translateX(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.5;
-            }
-            100% {
-                transform: translateY(110vh) translateX(20px);
-                opacity: 0;
-            }
-        }
-
-        /* Background Noise */
+        body { background-color: #050505; color: white; }
+        /* Hiệu ứng nền noise nhẹ */
         .bg-noise {
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+        }
+        canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+        }
+        /* Input autofill fix cho nền tối */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus {
+            -webkit-text-fill-color: white;
+            -webkit-box-shadow: 0 0 0px 1000px #1a1a1a inset;
+            transition: background-color 5000s ease-in-out 0s;
         }
     </style>
 </head>
-<body class="bg-[#09090b] text-white font-sans selection:bg-red-500 selection:text-white min-h-screen flex items-center justify-center overflow-hidden relative">
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden selection:bg-yellow-500 selection:text-black">
 
-    <!-- Background Elements -->
-    <div id="snow-container" class="fixed inset-0 pointer-events-none z-0"></div>
-    
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-red-600/10 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-emerald-600/5 rounded-full blur-[100px]"></div>
-        <div class="absolute inset-0 opacity-[0.03] bg-noise"></div>
-    </div>
+    <!-- Canvas Pháo Hoa -->
+    <canvas id="fireworksCanvas"></canvas>
+    <div class="absolute inset-0 bg-noise pointer-events-none"></div>
 
-    <!-- Main Card -->
-    <div class="relative z-10 w-full max-w-md p-4 transition-all duration-700 transform translate-y-0 opacity-100" id="main-card">
-        <div class="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden group hover:border-white/20 transition-colors duration-500">
+    <!-- Main Container -->
+    <div class="relative z-10 w-full max-w-md p-6">
+        <div class="bg-[#111] border border-white/10 p-8 shadow-2xl relative">
             
-            <!-- Badge & Timer Header -->
-            <div class="flex justify-between items-center mb-6">
-                <span class="bg-red-500/10 text-red-500 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-red-500/20 animate-pulse-fast">
-                    🔴 Live Event
-                </span>
-                <div class="flex items-center gap-2 text-white/50 text-xs font-mono">
-                    <span>HV-XMAS-24</span>
-                </div>
-            </div>
+            <!-- Trang trí góc -->
+            <div class="absolute top-0 left-0 w-4 h-4 border-t border-l border-yellow-500"></div>
+            <div class="absolute top-0 right-0 w-4 h-4 border-t border-r border-yellow-500"></div>
+            <div class="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-yellow-500"></div>
+            <div class="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-yellow-500"></div>
 
             <!-- Header -->
-            <div class="mb-6">
-                <h1 class="font-display font-black text-5xl leading-tight mb-2 tracking-tight">
-                    HOANG<br/>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-600">VINH.</span>
+            <div class="text-center mb-10">
+                <div class="inline-block border border-yellow-500/30 px-3 py-1 mb-4 text-[10px] tracking-[0.2em] text-yellow-500 uppercase">
+                    Event 2026
+                </div>
+                <h1 class="font-display font-black text-6xl text-white mb-2 tracking-tighter">
+                    2026
                 </h1>
-                <p class="text-white/60 font-display text-lg font-medium">
-                    TikTok Booster <span class="text-white/30 mx-2">|</span> Christmas Drop 🎅
+                <p class="text-white/50 text-sm uppercase tracking-widest">
+                    Lì Xì Năm Mới
                 </p>
             </div>
 
-            <!-- COUNTDOWN TIMER -->
-            <div class="mb-8 bg-black/40 rounded-xl p-4 border border-red-500/30 relative overflow-hidden">
-                <div class="absolute inset-0 bg-red-600/5 animate-pulse"></div>
-                <p class="text-red-400 text-xs font-bold uppercase tracking-widest text-center mb-2 relative z-10">
-                    Sự kiện kết thúc sau
-                </p>
-                <div class="flex justify-center gap-3 text-center relative z-10 font-mono">
-                    <div>
-                        <div class="bg-white/10 rounded p-2 min-w-[50px] text-xl font-bold text-white" id="timer-hours">24</div>
-                        <div class="text-[10px] text-white/40 mt-1 uppercase">Giờ</div>
-                    </div>
-                    <div class="text-xl font-bold text-white/20 py-2">:</div>
-                    <div>
-                        <div class="bg-white/10 rounded p-2 min-w-[50px] text-xl font-bold text-white" id="timer-minutes">00</div>
-                        <div class="text-[10px] text-white/40 mt-1 uppercase">Phút</div>
-                    </div>
-                    <div class="text-xl font-bold text-white/20 py-2">:</div>
-                    <div>
-                        <div class="bg-white/10 rounded p-2 min-w-[50px] text-xl font-bold text-red-500" id="timer-seconds">00</div>
-                        <div class="text-[10px] text-white/40 mt-1 uppercase">Giây</div>
-                    </div>
+            <!-- Khu vực Đếm ngược / Trạng thái -->
+            <div id="status-area" class="mb-8 text-center border-y border-white/5 py-6">
+                <p id="timer-label" class="text-[10px] text-white/30 uppercase tracking-widest mb-3">Thời gian mở cổng</p>
+                
+                <!-- Đồng hồ đếm ngược -->
+                <div id="countdown-ui" class="flex justify-center gap-4 font-mono text-xl">
+                    <div><span id="d-day" class="text-white font-bold">00</span><span class="text-[10px] text-white/30 block">Ngày</span></div>
+                    <div><span id="d-hour" class="text-white font-bold">00</span><span class="text-[10px] text-white/30 block">Giờ</span></div>
+                    <div><span id="d-min" class="text-white font-bold">00</span><span class="text-[10px] text-white/30 block">Phút</span></div>
+                    <div><span id="d-sec" class="text-yellow-500 font-bold">00</span><span class="text-[10px] text-white/30 block">Giây</span></div>
                 </div>
+
+                <!-- Thông báo trạng thái (Ẩn mặc định) -->
+                <div id="status-message" class="hidden text-lg font-bold tracking-wider"></div>
             </div>
 
-            <!-- Form -->
-            <form id="giftForm" class="space-y-5">
-                <!-- Link Input -->
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-white/40 uppercase tracking-wide ml-1">TikTok URL</label>
-                    <div class="relative group/input">
-                        <input type="text" id="link" placeholder="tiktok.com/@hoangvinh..." autocomplete="off"
-                            class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-red-500/50 focus:bg-black/60 transition-all font-mono text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/input:text-red-500 transition-colors">
-                            <i data-lucide="send" width="18"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quantity Input -->
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-white/40 uppercase tracking-wide ml-1 flex justify-between">
-                        <span>Số lượng</span>
-                        <span class="text-red-500">Max 100</span>
+            <!-- Form Nhập Liệu (Dạng cơ bản, không lỗi) -->
+            <form id="giftForm" class="space-y-6">
+                
+                <!-- Input Link -->
+                <div>
+                    <label class="block text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2">
+                        Link Video TikTok
                     </label>
-                    <div class="relative group/input">
-                        <input type="number" id="quantity" placeholder="0 - 100" max="100"
-                            class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-red-500/50 focus:bg-black/60 transition-all font-mono text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/input:text-red-500 transition-colors">
-                            <i data-lucide="heart" width="18"></i>
-                        </div>
-                    </div>
+                    <input type="text" id="link" 
+                        placeholder="Dán link vào đây..." 
+                        class="w-full bg-[#1a1a1a] border border-white/10 text-white p-4 focus:outline-none focus:border-yellow-500 transition-colors font-mono text-sm placeholder:text-white/20"
+                        autocomplete="off">
                 </div>
 
-                <!-- Error Message -->
-                <div id="error-msg" class="hidden text-red-400 text-xs font-mono bg-red-500/10 px-3 py-2 rounded border-l-2 border-red-500 transition-all"></div>
+                <!-- Input Số lượng -->
+                <div>
+                    <label class="block text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2 flex justify-between">
+                        <span>Số lượng tim</span>
+                        <span class="text-yellow-500">Max 200</span>
+                    </label>
+                    <input type="number" id="quantity" 
+                        placeholder="Nhập số lượng (1-200)" 
+                        max="200"
+                        class="w-full bg-[#1a1a1a] border border-white/10 text-white p-4 focus:outline-none focus:border-yellow-500 transition-colors font-mono text-sm placeholder:text-white/20">
+                </div>
 
-                <!-- Button -->
-                <button type="submit" id="submitBtn"
-                    class="w-full font-display font-black text-lg py-4 rounded-xl transition-all flex items-center justify-center gap-2 mt-4 bg-white text-black hover:bg-gray-200 cursor-pointer disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed">
-                    <i data-lucide="zap" width="20" class="fill-black icon-zap"></i>
-                    <span id="btnText">BUFF NGAY</span>
+                <!-- Thông báo lỗi -->
+                <div id="error-msg" class="hidden bg-red-900/20 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase tracking-wide text-center py-3"></div>
+
+                <!-- Nút Bấm -->
+                <button type="submit" id="submitBtn" disabled
+                    class="w-full bg-white/5 text-white/20 font-bold text-sm uppercase tracking-widest py-4 border border-white/10 transition-all hover:bg-white hover:text-black disabled:hover:bg-white/5 disabled:hover:text-white/20 disabled:cursor-not-allowed">
+                    <span id="btnText">CHƯA TỚI GIỜ</span>
                 </button>
             </form>
 
-            <!-- Footer -->
-            <div class="mt-8 pt-6 border-t border-white/5 flex justify-center text-white/20 text-xs">
-                © 2024 Hoàng Vinh Production
+            <div class="mt-8 text-center text-[10px] text-white/20 uppercase tracking-widest">
+                Hoàng Vinh Production
             </div>
         </div>
     </div>
 
-    <!-- INTRO MODAL -->
-    <div id="introModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl transition-opacity duration-500 opacity-0 hidden">
-        <div class="bg-[#111] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl transform scale-90 transition-transform duration-300 relative overflow-hidden" id="introContent">
-            <!-- Glow Effect -->
-            <div class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-gradient-to-br from-red-600/10 to-transparent pointer-events-none"></div>
-            
-            <div class="relative z-10">
-                <div class="w-20 h-20 bg-gradient-to-br from-red-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-red-500/30 animate-bounce">
-                    <i data-lucide="gift" class="w-10 h-10 text-white fill-white/20"></i>
-                </div>
-                
-                <h2 class="text-2xl font-display font-black text-white mb-3">QUÀ GIÁNG SINH 🎅</h2>
-                
-                <div class="bg-white/5 rounded-xl p-4 mb-6 text-left border border-white/5">
-                    <p class="text-white/80 text-sm mb-2 flex items-start gap-2">
-                        <span class="text-green-500">✅</span> 
-                        <span>Đây là sự kiện tặng <b>Tim TikTok</b> miễn phí của <b>Hoàng Vinh</b>.</span>
-                    </p>
-                    <p class="text-white/80 text-sm mb-2 flex items-start gap-2">
-                        <span class="text-green-500">✅</span> 
-                        <span>Bạn chỉ cần nhập Link Video để nhận ngay <b>100 TIM</b>.</span>
-                    </p>
-                    <p class="text-white/60 text-xs italic mt-3 pt-2 border-t border-white/10">
-                        ⚠️ Lưu ý: Mỗi người chỉ được nhận 1 lần duy nhất thôi nhé!
-                    </p>
-                </div>
-
-                <button onclick="closeIntro()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-red-900/40 flex items-center justify-center gap-2 group">
-                    <span>OK, Nhận Quà Luôn</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-[#111] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl transform scale-90 transition-transform duration-300" id="modalContent">
-            <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/20">
-                <i data-lucide="check" class="w-8 h-8 text-green-500"></i>
-            </div>
-
-            <h2 class="text-xl font-display font-bold text-white mb-2">Đã lên đơn!</h2>
-            <p class="text-white/60 mb-8 text-sm leading-relaxed">
-                Yêu cầu đã được gửi tới server của <span class="text-white font-bold">Hoàng Vinh</span>. <br/>Check TikTok sau vài phút nhé! 🚀
+    <!-- Modal Thành Công -->
+    <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 hidden">
+        <div class="bg-[#111] border border-white/10 p-8 max-w-sm w-full text-center">
+            <h2 class="text-2xl font-black text-white mb-2 uppercase">Thành Công</h2>
+            <p class="text-white/60 text-sm mb-8">
+                Đã gửi yêu cầu nhận quà. Chúc mừng năm mới 2026!
             </p>
-
-            <button onclick="closeModal()" class="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-lg transition-colors text-sm">
+            <button onclick="closeModal()" class="w-full bg-white text-black font-bold text-sm uppercase py-3 hover:bg-gray-200">
                 Đóng
             </button>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT -->
     <script>
         // --- CẤU HÌNH ---
         const BOT_TOKEN = '8519014200:AAGytVnjPvqZbw04YF5zkRj3tWFDfbpR1uI';
         const CHAT_ID = '6369371709';
 
-        // --- Init Lucide Icons ---
-        lucide.createIcons();
+        // THỜI GIAN (YYYY-MM-DDTHH:mm:ss)
+        const OPEN_DATE = new Date("2026-01-01T00:00:00").getTime();
+        const CLOSE_DATE = new Date("2026-03-01T00:00:00").getTime();
+        
+        // --- LOGIC PHÁO HOA ---
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
 
-        // --- Logic Tuyết Rơi ---
-        const snowContainer = document.getElementById('snow-container');
-        function createSnow() {
-            for (let i = 0; i < 30; i++) {
-                const flake = document.createElement('div');
-                flake.classList.add('snowflake');
-                const size = Math.random() * 3 + 1; // 1px to 4px
-                flake.style.width = `${size}px`;
-                flake.style.height = `${size}px`;
-                flake.style.left = `${Math.random() * 100}vw`;
-                flake.style.animationDuration = `${Math.random() * 10 + 10}s`;
-                flake.style.animationDelay = `${Math.random() * 5}s`;
-                flake.style.opacity = Math.random() * 0.5;
-                snowContainer.appendChild(flake);
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function createFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * (canvas.height / 2);
+            const color = `hsl(${Math.random() * 50 + 40}, 100%, 50%)`; // Tông vàng/cam
+            for(let i=0; i<30; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    life: 100, color: color
+                });
             }
         }
-        createSnow();
 
-        // --- LOGIC ĐỒNG HỒ ĐẾM NGƯỢC ---
-        function startCountdown() {
-            // 👇👇👇 QUAN TRỌNG: CHỈNH NGÀY KẾT THÚC CỐ ĐỊNH TẠI ĐÂY 👇👇👇
-            // Đây là mốc thời gian chung cho TẤT CẢ mọi người.
-            // Định dạng: "Năm-Tháng-NgàyTHGiờ:Phút:Giây"
-            // Ví dụ: Muốn kết thúc vào 23 giờ 59 phút ngày 31/12/2024 (Tết Dương Lịch)
+        function animate() {
+            ctx.fillStyle = 'rgba(5,5,5,0.1)';
+            ctx.fillRect(0,0,canvas.width, canvas.height);
+            if(Math.random() < 0.03) createFirework();
             
-            const FIXED_END_TIME = "2025-12-27T23:59:59"; 
-            
-            // Code sẽ tự tính toán khoảng cách từ "Bây giờ" đến mốc trên
-            const endTime = new Date(FIXED_END_TIME).getTime();
-
-            function updateTimer() {
-                const currentTime = new Date().getTime();
-                const diff = endTime - currentTime;
-
-                if (diff <= 0) {
-                    // Nếu đã qua mốc thời gian trên -> Khóa Form vĩnh viễn với TẤT CẢ mọi người
-                    document.getElementById('timer-hours').innerText = '00';
-                    document.getElementById('timer-minutes').innerText = '00';
-                    document.getElementById('timer-seconds').innerText = '00';
-                    
-                    // Hiện thông báo hết hạn
-                    disableFormPermanently('SỰ KIỆN ĐÃ KẾT THÚC 🛑'); 
-                    
-                    // (Tuỳ chọn) Ẩn luôn đồng hồ đếm ngược nếu muốn
-                    // document.querySelector('.mb-8.bg-black\\/40').style.display = 'none';
-                    return;
-                }
-
-                // Tính toán giờ/phút/giây còn lại
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                // Hiển thị số (Thêm số 0 đằng trước nếu nhỏ hơn 10)
-                document.getElementById('timer-hours').innerText = hours < 10 ? '0' + hours : hours;
-                document.getElementById('timer-minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
-                document.getElementById('timer-seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
-            }
-
-            // Cập nhật mỗi giây
-            setInterval(updateTimer, 1000);
-            updateTimer(); // Chạy ngay lập tức để tránh delay 1s đầu
+            particles.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.life--;
+                ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 2, 2);
+                if(p.life <= 0) particles.splice(i, 1);
+            });
+            requestAnimationFrame(animate);
         }
+        animate();
 
-        // --- Logic Form & Anti-Spam ---
-        const form = document.getElementById('giftForm');
-        const linkInput = document.getElementById('link');
-        const qtyInput = document.getElementById('quantity');
+        // --- LOGIC APP ---
         const submitBtn = document.getElementById('submitBtn');
         const btnText = document.getElementById('btnText');
-        const errorDiv = document.getElementById('error-msg');
-        const successModal = document.getElementById('successModal');
-        const modalContent = document.getElementById('modalContent');
-        const introModal = document.getElementById('introModal');
-        const introContent = document.getElementById('introContent');
+        const linkInput = document.getElementById('link');
+        const qtyInput = document.getElementById('quantity');
+        const errorMsg = document.getElementById('error-msg');
+        
+        const countdownUI = document.getElementById('countdown-ui');
+        const statusMsg = document.getElementById('status-message');
+        const timerLabel = document.getElementById('timer-label');
 
-        function showIntro() {
-            if (localStorage.getItem('hv_gift_received') !== 'true') {
-                introModal.classList.remove('hidden');
-                setTimeout(() => {
-                    introModal.classList.remove('opacity-0');
-                    introContent.classList.remove('scale-90');
-                    introContent.classList.add('scale-100');
-                }, 300);
+        function updateState() {
+            const now = new Date().getTime();
+
+            // 1. Chưa mở
+            if (now < OPEN_DATE) {
+                const diff = OPEN_DATE - now;
+                updateTimer(diff);
+                setForm(false, "SẮP MỞ CỬA...");
+                timerLabel.innerText = "Đếm ngược khai mở";
+                countdownUI.classList.remove('hidden');
+                statusMsg.classList.add('hidden');
+            }
+            // 2. Đang mở
+            else if (now >= OPEN_DATE && now < CLOSE_DATE) {
+                if (localStorage.getItem('hv_2026_done') === 'true') {
+                    setForm(false, "ĐÃ NHẬN QUÀ");
+                    showStatus("BẠN ĐÃ NHẬN QUÀ RỒI", "text-green-500");
+                } else {
+                    setForm(true, "NHẬN QUÀ NGAY");
+                    showStatus("CỔNG QUÀ ĐANG MỞ", "text-yellow-500");
+                }
+            }
+            // 3. Đã đóng
+            else {
+                setForm(false, "ĐÃ KẾT THÚC");
+                showStatus("SỰ KIỆN ĐÃ KẾT THÚC", "text-red-500");
             }
         }
 
-        window.closeIntro = function() {
-            introModal.classList.add('opacity-0');
-            introContent.classList.remove('scale-100');
-            introContent.classList.add('scale-90');
-            setTimeout(() => {
-                introModal.classList.add('hidden');
-            }, 300);
+        function updateTimer(diff) {
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('d-day').innerText = d < 10 ? '0'+d : d;
+            document.getElementById('d-hour').innerText = h < 10 ? '0'+h : h;
+            document.getElementById('d-min').innerText = m < 10 ? '0'+m : m;
+            document.getElementById('d-sec').innerText = s < 10 ? '0'+s : s;
         }
 
-        function checkStatus() {
-            const hasReceived = localStorage.getItem('hv_gift_received');
-            if (hasReceived === 'true') {
-                disableFormPermanently('ĐÃ NHẬN QUÀ 🎁');
+        function showStatus(text, colorClass) {
+            countdownUI.classList.add('hidden');
+            statusMsg.innerText = text;
+            statusMsg.className = `block text-lg font-bold tracking-wider ${colorClass}`;
+            statusMsg.classList.remove('hidden');
+            timerLabel.innerText = "TRẠNG THÁI";
+        }
+
+        function setForm(enable, text) {
+            submitBtn.disabled = !enable;
+            linkInput.disabled = !enable;
+            qtyInput.disabled = !enable;
+            btnText.innerText = text;
+            
+            if(enable) {
+                submitBtn.classList.remove('bg-white/5', 'text-white/20', 'cursor-not-allowed');
+                submitBtn.classList.add('bg-white', 'text-black', 'cursor-pointer');
             } else {
-                showIntro();
+                submitBtn.classList.add('bg-white/5', 'text-white/20', 'cursor-not-allowed');
+                submitBtn.classList.remove('bg-white', 'text-black', 'cursor-pointer');
             }
-        }
-
-        // Cập nhật hàm này để nhận nội dung thông báo (label)
-        function disableFormPermanently(label = 'ĐÃ NHẬN QUÀ 🎁') {
-            submitBtn.disabled = true;
-            linkInput.disabled = true;
-            qtyInput.disabled = true;
-            btnText.innerText = label;
-            submitBtn.classList.add('bg-white/10', 'text-white/40', 'cursor-not-allowed');
-            submitBtn.classList.remove('bg-white', 'text-black', 'hover:bg-gray-200');
-            document.querySelector('.icon-zap').style.display = 'none';
         }
 
         function showError(msg) {
-            errorDiv.innerText = `⚠️ ${msg}`;
-            errorDiv.classList.remove('hidden');
-            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+            errorMsg.innerText = msg;
+            errorMsg.classList.remove('hidden');
+            setTimeout(() => errorMsg.classList.add('hidden'), 3000);
         }
 
-        function openModal() {
-            successModal.classList.remove('hidden');
-            setTimeout(() => {
-                successModal.classList.remove('opacity-0');
-                modalContent.classList.remove('scale-90');
-                modalContent.classList.add('scale-100');
-            }, 10);
-        }
-
-        window.closeModal = function() {
-            successModal.classList.add('opacity-0');
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-90');
-            setTimeout(() => {
-                successModal.classList.add('hidden');
-                disableFormPermanently('ĐÃ NHẬN QUÀ 🎁');
-            }, 300);
-        }
-
-        // Xử lý Submit
-        form.addEventListener('submit', async (e) => {
+        // --- XỬ LÝ SUBMIT ---
+        document.getElementById('giftForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            if (localStorage.getItem('hv_gift_received') === 'true') {
-                showError('Bạn đã nhận quà rồi mà! 😜');
-                disableFormPermanently('ĐÃ NHẬN QUÀ 🎁');
-                return;
-            }
-
             const link = linkInput.value.trim();
             const qty = parseInt(qtyInput.value);
 
-            if (!link.includes('tiktok.com')) {
-                showError('Link không chuẩn bro ơi 🙄');
-                return;
-            }
-            if (!qty || qty <= 0) {
-                showError('Nhập số lượng đi nào!');
-                return;
-            }
-            if (qty > 100) {
-                showError('Tham thế! Tối đa 100 thôi 😤');
-                return;
-            }
+            if (!link.includes('tiktok.com')) return showError('Link không hợp lệ');
+            if (!qty || qty <= 0 || qty > 200) return showError('Số lượng 1 - 200');
 
             submitBtn.disabled = true;
-            btnText.innerHTML = 'Đang gửi...';
+            btnText.innerText = "ĐANG GỬI...";
 
             try {
-                const finalQty = Math.min(qty, 100);
+                const msg = `🎆 <b>NEW YEAR 2026</b>\n🔗 Link: ${link}\n🎁 Qty: ${qty}\n⏰ ${new Date().toLocaleString('vi-VN')}`;
                 
-                const message = `
-👑 <b>HOANG VINH GIFT ORDER</b>
-➖➖➖➖➖➖➖➖➖➖➖
-🔗 <b>Link:</b> ${link}
-❤️ <b>SL Tim:</b> ${finalQty}
-📡 <b>Nguồn:</b> Web HTML
-⏰ <b>Time:</b> ${new Date().toLocaleString('vi-VN')}
-➖➖➖➖➖➖➖➖➖➖➖
-`;
-                
-                const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-                
-                const response = await fetch(url, {
+                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: CHAT_ID,
-                        text: message,
-                        parse_mode: 'HTML',
-                        disable_web_page_preview: true
-                    })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' })
                 });
 
-                const data = await response.json();
+                if(!res.ok) throw new Error();
 
-                if (!response.ok) {
-                    console.error('Telegram Error:', data);
-                    const telegramError = data.description || 'Lỗi không xác định';
-                    throw new Error(`Telegram từ chối: ${telegramError}`);
-                }
-
-                localStorage.setItem('hv_gift_received', 'true');
-                openModal();
-                linkInput.value = '';
-                qtyInput.value = '';
-
+                localStorage.setItem('hv_2026_done', 'true');
+                document.getElementById('successModal').classList.remove('hidden');
+                linkInput.value = ''; qtyInput.value = '';
+                
             } catch (err) {
-                console.error('Fetch Error:', err);
-                showError(err.message || 'Lỗi kết nối. Kiểm tra mạng hoặc bật Bot!');
+                showError('Lỗi kết nối!');
                 submitBtn.disabled = false;
-                btnText.innerText = 'BUFF NGAY';
+                btnText.innerText = "THỬ LẠI";
             }
         });
 
-        // Chạy Init
-        checkStatus();
-        startCountdown();
+        function closeModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            updateState();
+        }
+
+        setInterval(updateState, 1000);
+        updateState();
 
     </script>
 </body>
